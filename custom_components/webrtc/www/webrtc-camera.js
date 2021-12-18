@@ -420,18 +420,32 @@ class WebRTCCamera extends HTMLElement {
         card.appendChild(ptz);
 
         const handlePTZ = (ev) => {
-            const [domain, service] = this.config.ptz.service.split('.', 2);
-            const data = this.config.ptz['data_' + ev.target.className];
-            if (data) {
-                this.hass.callService(domain, service, data);
-            }
+            this.runPTZCommand(ev.target.className);
+        }
+
+        const stopPTZ = () => {
+            this.runPTZCommand('stop');
         }
 
         const buttons = ptz.querySelectorAll('ha-icon');
         buttons.forEach(function (el) {
-            el.addEventListener('click', handlePTZ);
+            let mouseEvent = 'click';
+            if (this.config.ptz.hold_to_move === true && this.config.ptz.data_stop) {
+                mouseEvent = 'mousedown';
+                el.addEventListener('mouseup', stopPTZ);
+                e1.addEventListener('touchend', stopPTZ);
+            }
+            el.addEventListener(mouseEvent, handlePTZ);
             el.addEventListener('touchstart', handlePTZ);
         });
+    }
+
+    runPTZCommand(type) {
+        const [domain, service] = this.config.ptz.service.split('.', 2);
+        const data = this.config.ptz['data_' + type];
+        if (data) {
+            this.hass.callService(domain, service, data);
+        }
     }
 
     async renderGUI(hass) {
