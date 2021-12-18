@@ -428,9 +428,10 @@ class WebRTCCamera extends HTMLElement {
         }
 
         const buttons = ptz.querySelectorAll('ha-icon');
+        const self = this;
         buttons.forEach(function (el) {
             let mouseEvent = 'click';
-            if (this.config.ptz.hold_to_move === true && this.config.ptz.data_stop) {
+            if (self.config.ptz.hold_to_move === true && self.config.ptz.data_stop) {
                 mouseEvent = 'mousedown';
                 el.addEventListener('mouseup', stopPTZ);
                 e1.addEventListener('touchend', stopPTZ);
